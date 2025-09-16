@@ -6,13 +6,13 @@ import { defineConfig, devices } from '@playwright/test';
  */
 const config = ({
   testDir: './tests',
-  timeout: 40 * 1000,
+  timeout: 30 * 1000,
   expect: {
-    timeout: 40 * 1000
+    timeout: 5000
   },
   reporter: 'html',
   use: {
-    browserName: 'firefox',
+    browserName: 'chromium',
     headless: false,
   },
 

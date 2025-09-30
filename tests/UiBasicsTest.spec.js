@@ -33,13 +33,65 @@ test('Browser Context playwright test', async ({ browser }) => {
     console.log(allTitles)
 });
 
-test('Page playwright test', async ({ page }) => {
-    /* Si vamos directamente con page.goto, significa que necesitamos un default browser y listo, 
-    sino usamos el codigo comentado arriba con la informacion de cookies o plugins que requiera nuestra prueba */
-    /* Aca le decimos a que pagina web ir con "page.goto" */
-    await page.goto("https://www.google.com")
-    /* Conseguimos el titulo por consola. */
-    console.log(await page.title());
-    /* Aca le decimos que esperamos que el titulo sea "Google" */
-    await expect(page).toHaveTitle("Google");
+test('UI Controls', async ({ page }) => {
+    await page.goto("https://rahulshettyacademy.com/loginpagePractise/")
+
+    /* Locators */
+    const userName = page.locator("#username")
+    const signInBtn = page.locator("#signInBtn")
+    const terms = page.locator("#terms")
+    const documentLink = page.locator("[href*='documents-request']")
+
+    /* DropDown */
+    const dropdown = page.locator("select.form-control")
+    await dropdown.selectOption("consult")
+
+    /* CheckBox */
+    await page.locator(".radiotextsty").last().click()
+    await page.locator("#okayBtn").click()
+    //assertion
+    await expect(page.locator(".radiotextsty").last()).toBeChecked()
+    console.log(await page.locator(".radiotextsty").last().isChecked())
+
+
+    /* Fill text Inputs */
+    await userName.fill("rahulshetty")
+    await page.locator("#password").fill("learning")
+
+    /* Checkbox + assertion */
+    await terms.click();
+    expect(await terms).toBeChecked();
+    await terms.uncheck();
+    expect(await terms.isChecked()).toBeFalsy();
+
+    /* Assertion link */
+    await expect(documentLink).toHaveAttribute("class", "blinkingText")
+
+    await page.pause();
 });
+
+test('Child Windows Handling', async ({ browser }) => {
+
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    const userName = page.locator("#username")
+    await page.goto("https://rahulshettyacademy.com/loginpagePractise/");
+    const documentLink = page.locator("[href*='documents-request']")
+    
+
+    const [newPage] = await Promise.all([
+        context.waitForEvent('page'),
+        documentLink.click()
+    ])
+
+    const text = await newPage.locator(".red").textContent();
+    console.log(text)
+
+    const arrayText = text.split("@")
+    const domain = arrayText[1].split(" ")[0]
+    console.log(domain)
+
+    await userName.fill(domain)
+    console.log(await userName.inputValue())
+    await page.pause();
+})

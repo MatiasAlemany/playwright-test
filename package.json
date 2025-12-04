@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "webTests": "npx playwright test --grep @Web",
-    "apiTests": "npx playwright test --grep @API",
+    "webTests": "npx playwright test tests/ClientAppPageObjectImplementation.spec.js",
+    "apiTests": "npx playwright test tests/WebApiPart2.spec.js",
     "regression": "npx playwright test"
   },
   "keywords": [],
